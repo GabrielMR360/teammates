@@ -85,6 +85,107 @@ public class FeedbackQuestionsLogicTest extends BaseLogicTest {
     }
 
     @Test
+    public void testGetRecipientsOfQuestionIfGenerateOptionsForEqualsStudentsInSameSection() {
+        FeedbackQuestionAttributes question;
+        StudentAttributes studentGiver;
+        CourseRoster courseRoster;
+        Map<String, FeedbackQuestionRecipient> recipients;
+
+        question = getQuestionFromDatabase("qn6InSession1InCourse1");
+        studentGiver = dataBundle.students.get("student1InCourse1");
+
+        courseRoster = new CourseRoster(
+                studentsLogic.getStudentsForCourse(studentGiver.getCourse()),
+                instructorsLogic.getInstructorsForCourse(studentGiver.getCourse()));
+
+        recipients = fqLogic.getRecipientsOfQuestion(question, null, studentGiver, null);
+        assertEquals(recipients.size(), 0); // 5 students minus giver himself
+        recipients = fqLogic.getRecipientsOfQuestion(question, null, studentGiver, courseRoster);
+        assertEquals(recipients.size(), 3); // should produce the same answer
+    }
+
+    @Test
+    public void testGetRecipientsOfQuestionCourseRosterIsDIferentOfNullAndGenerateOptionsForEqualsStudentsInSameSection() {
+        FeedbackQuestionAttributes question;
+        StudentAttributes studentGiver;
+        CourseRoster courseRoster;
+        Map<String, FeedbackQuestionRecipient> recipients;
+
+        question = getQuestionFromDatabase("qn6InSession1InCourse1");
+        studentGiver = dataBundle.students.get("student1InCourse1");
+
+        courseRoster = new CourseRoster(
+                studentsLogic.getStudentsForCourse(studentGiver.getCourse()),
+                instructorsLogic.getInstructorsForCourse(studentGiver.getCourse()));
+
+        recipients = fqLogic.getRecipientsOfQuestion(question, null, studentGiver, courseRoster);
+        assertEquals(recipients.size(), 3); // 5 students minus giver himself
+        recipients = fqLogic.getRecipientsOfQuestion(question, null, studentGiver, courseRoster);
+        assertEquals(recipients.size(), 3); // should produce the same answer
+    }
+
+    @Test
+    public void testGetRecipientsOfQuestionTestIfGenerateOptionsForEqualsTeamsInSameSection() {
+        FeedbackQuestionAttributes question;
+        StudentAttributes studentGiver;
+        InstructorAttributes instructorGiver;
+        CourseRoster courseRoster;
+        Map<String, FeedbackQuestionRecipient> recipients;
+
+        question = getQuestionFromDatabase("qn7InSession1InCourse1");
+        studentGiver = dataBundle.students.get("student1InCourse1");
+        courseRoster = new CourseRoster(
+                studentsLogic.getStudentsForCourse(studentGiver.getCourse()),
+                instructorsLogic.getInstructorsForCourse(studentGiver.getCourse()));
+
+
+        recipients = fqLogic.getRecipientsOfQuestion(question, null, studentGiver, null);
+        assertEquals(recipients.size(), 0); // 5 students minus giver himself
+        recipients = fqLogic.getRecipientsOfQuestion(question, null, studentGiver, courseRoster);
+        assertEquals(recipients.size(), 0); // should produce the same answer
+
+        instructorGiver = dataBundle.instructors.get("instructor1OfCourse1");
+        courseRoster = new CourseRoster(
+                studentsLogic.getStudentsForCourse(instructorGiver.getCourseId()),
+                instructorsLogic.getInstructorsForCourse(instructorGiver.getCourseId()));
+
+        recipients = fqLogic.getRecipientsOfQuestion(question, instructorGiver, null, null);
+        assertEquals(recipients.size(), 1); // instructor is not student so he can respond to all 5.
+        recipients = fqLogic.getRecipientsOfQuestion(question, instructorGiver, null, courseRoster);
+        assertEquals(recipients.size(), 0); // should produce the same answer
+    }
+
+    @Test
+    public void testGetRecipientsOfQuestionTestCourseRosterIsDIferentOfNullAndGenerateOptionsForEqualsTeamsInSameSection() {
+        FeedbackQuestionAttributes question;
+        StudentAttributes studentGiver;
+        InstructorAttributes instructorGiver;
+        CourseRoster courseRoster;
+        Map<String, FeedbackQuestionRecipient> recipients;
+
+        question = getQuestionFromDatabase("qn7InSession1InCourse1");
+        studentGiver = dataBundle.students.get("student1InCourse1");
+        courseRoster = new CourseRoster(
+                studentsLogic.getStudentsForCourse(studentGiver.getCourse()),
+                instructorsLogic.getInstructorsForCourse(studentGiver.getCourse()));
+
+        recipients = fqLogic.getRecipientsOfQuestion(question, null, studentGiver, courseRoster);
+        assertEquals(recipients.size(), 0); // 5 students minus giver himself
+        recipients = fqLogic.getRecipientsOfQuestion(question, null, studentGiver, courseRoster);
+        assertEquals(recipients.size(), 0); // should produce the same answer
+
+        instructorGiver = dataBundle.instructors.get("instructor1OfCourse1");
+        courseRoster = new CourseRoster(
+                studentsLogic.getStudentsForCourse(instructorGiver.getCourseId()),
+                instructorsLogic.getInstructorsForCourse(instructorGiver.getCourseId()));
+
+        recipients = fqLogic.getRecipientsOfQuestion(question, instructorGiver, null, null);
+        assertEquals(recipients.size(), 1); // instructor is not student so he can respond to all 5.
+        recipients = fqLogic.getRecipientsOfQuestion(question, instructorGiver, null, courseRoster);
+        assertEquals(recipients.size(), 0); // should produce the same answer
+    }
+
+    @Test
     public void testGetRecipientsOfQuestion() throws Exception {
         FeedbackQuestionAttributes question;
         StudentAttributes studentGiver;
